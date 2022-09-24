@@ -1,5 +1,5 @@
-import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {StudentsApiClient} from "../students-api-client.service";
+import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import { StudentsApiClient } from "../students-api-client.service";
 import Student from "../student";
 
 @Component({
@@ -20,9 +20,7 @@ export class StudentsListComponent implements OnInit {
   constructor(private studentsApiClient: StudentsApiClient) { }
 
   ngOnInit(): void {
-    this.studentsApiClient.getAll()
-      .subscribe(students =>
-        this.students = students.sort((one, two) => (one.id > two.id ? 1 : -1)));
+    this.loadStudents();
   }
 
   loadTemplate(student: Student) {
@@ -37,8 +35,8 @@ export class StudentsListComponent implements OnInit {
     this.studentsApiClient
       .getAll()
       .subscribe((students) => {
-      this.students = students;
-    });
+        this.students = students.sort((one, two) => (one.id > two.id ? 1 : -1));
+      });
   }
 
   addStudent() {
