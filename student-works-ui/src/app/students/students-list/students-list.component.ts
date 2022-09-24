@@ -1,6 +1,5 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {StudentsApiClient} from "../students-api-client.service";
-import {Observable} from "rxjs";
 import Student from "../student";
 
 @Component({
@@ -13,23 +12,17 @@ export class StudentsListComponent implements OnInit {
   @ViewChild('readOnlyTemplate', {static: false}) readOnlyTemplate: TemplateRef<any>|null = null;
   @ViewChild('editTemplate', {static: false}) editTemplate: TemplateRef<any>|null = null;
 
-  editedStudent: Student = {
-    id:"1",
-    name: "name",
-    age:1
-  };
+  editedStudent: Student | undefined;
   isNewRecord: boolean = false;
   statusMessage: string = "";
-  students$: Observable<Student[]> = new Observable<Student[]>();
+  students: Student[] | undefined = [];
 
   constructor(private studentsApiClient: StudentsApiClient) { }
 
   ngOnInit(): void {
-    this.students$ = this.studentsApiClient.getAll();
-  }
-
-  addStudent() {
-
+    this.studentsApiClient.getAll()
+      .subscribe(students =>
+        this.students = students.sort((one, two) => (one.id > two.id ? 1 : -1)));
   }
 
   loadTemplate(student: Student) {
@@ -40,20 +33,65 @@ export class StudentsListComponent implements OnInit {
     }
   }
 
+  private loadStudents() {
+    this.studentsApiClient
+      .getAll()
+      .subscribe((students) => {
+      this.students = students;
+    });
+  }
 
-  cancel() {
-
+  addStudent() {
+    this.editedStudent = {
+      id:"",
+      name: "",
+      age:0
+    };
+    this.students?.push(this.editedStudent);
+    this.isNewRecord = true;
   }
 
   editStudent(student: any) {
-
+    this.editedStudent = {
+      id: student.id,
+      name: student.name,
+      age: student.age
+    }
   }
 
   deleteStudent(student: any) {
+    this.studentsApiClient
+      .delete(student.id)
+      .subscribe(() =>{
+          this.statusMessage = 'Данные успешно удалены';
+          this.loadStudents();
+      });
+  }
 
+  cancel() {
+    this.loadStudents();
   }
 
   saveStudent() {
-
+    if (this.isNewRecord) {
+      this.studentsApiClient
+        .create(this.editedStudent!)
+        .subscribe(() => {
+          this.statusMessage = 'Данные успешно добавлены';
+          this.editedStudent = undefined;
+          this.loadStudents();
+        });
+      this.isNewRecord = false;
+    } else {
+      this.studentsApiClient
+        .update(this.editedStudent?.id!, {
+          name: this.editedStudent?.name!,
+          age: this.editedStudent?.age!
+        })
+        .subscribe(() => {
+        this.statusMessage = 'Данные успешно обновлены';
+          this.loadStudents();
+      });
+    }
   }
 }
