@@ -10,4 +10,6 @@ const shards =[
     "rs-shard-03/shard03-c:27017",
 ]
 
-shards.forEach(sh.addShard)
+shards.forEach(shard =>{
+    sh.addShard(shard);
+});
