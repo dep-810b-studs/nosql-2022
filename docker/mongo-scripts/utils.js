@@ -1,28 +1,32 @@
-getReplicaSetConfig = (id, number = null, configsvr = false, memberPrefix ='shard', membersCount = 3) => {
-    let members = [...Array(membersCount).keys()]
-        .map(index => {
-            let memberPostfix = '';
+const shard01Nodes = [
+    "rs-shard-01/shard01-a:27017",
+    "rs-shard-01/shard01-b:27017",
+    "rs-shard-01/shard01-c:27017",
+];
 
-            if(!configsvr){
-                let aAsciiCode = 'a'.charCodeAt(0);
-                let shardKey = String.fromCharCode(aAsciiCode + index);
-                memberPostfix = `0${number}-${shardKey}`;
-            }else{
-                memberPostfix = `0${index + 1}`;
-            }
+const shard02Nodes = [
+    "rs-shard-02/shard02-a:27017",
+    "rs-shard-02/shard02-b:27017",
+    "rs-shard-02/shard02-c:27017",
+];
 
-            return {
-                _id: index,
-                host: `${memberPrefix}${memberPostfix}:27017`
-            }
-        });
+const shard03Nodes = [
+    "rs-shard-03/shard03-a:27017",
+    "rs-shard-03/shard03-b:27017",
+    "rs-shard-03/shard03-c:27017",
+];
 
-    let rsConf = {
+const allShards = [
+    ...shard01Nodes,
+    ...shard02Nodes,
+    ...shard03Nodes,
+];
+
+getReplicaSetConfig = (id, members, configsvr = false) => {
+    return {
         _id: id,
         configsvr: configsvr,
         version: 1,
         members: members
-    };
-
-    return rsConf;
+    };;
 };
