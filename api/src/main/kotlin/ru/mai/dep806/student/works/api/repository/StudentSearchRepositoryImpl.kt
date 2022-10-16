@@ -56,8 +56,10 @@ class StudentSearchRepositoryImpl : StudentSearchRepository {
                 requestBuilder
                     .index(INDEX_NAME)
                     .query { queryBuilder ->
-                        queryBuilder.match {
-                            it.field("name").query(filter)
+                        queryBuilder.queryString {
+                            it
+                                .defaultField("name")
+                                .query("*$filter*")
                         }
                     }
         }, PersistentStudent::class.java)
