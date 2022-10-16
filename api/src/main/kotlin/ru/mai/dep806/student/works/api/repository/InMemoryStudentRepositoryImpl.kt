@@ -4,17 +4,17 @@ import org.springframework.stereotype.Repository
 import ru.mai.dep806.student.works.api.model.PersistentStudent
 
 @Repository("inMemoryPersistentStudentRepository")
-class InMemoryPersistentStudentRepositoryImpl : StudentRepository {
+class InMemoryPersistentStudentRepositoryImpl : StudentReadRepository, StudentWriteRepository {
 
     private val students: MutableList<PersistentStudent> = mutableListOf(
-        PersistentStudent("1","Иван",21),
-        PersistentStudent("2","Алексей",22),
-        PersistentStudent("3","Сергей",23),
+        PersistentStudent(1,"Иван",21),
+        PersistentStudent(2,"Алексей",22),
+        PersistentStudent(3,"Сергей",23),
     )
 
-    override fun findAll(): List<PersistentStudent> = students;
+    override fun findAll(): List<PersistentStudent> = students
 
-    override fun findById(id: String): PersistentStudent? = students.singleOrNull { it.id == id }
+    override fun findById(id: String): PersistentStudent? = students.singleOrNull { it.id == id.toInt() }
 
     override fun add(student: PersistentStudent) {
 
@@ -26,7 +26,7 @@ class InMemoryPersistentStudentRepositoryImpl : StudentRepository {
 
     override fun update(persistentStudent: PersistentStudent) : PersistentStudent? {
 
-        val student = findById(persistentStudent.id!!)
+        val student = findById(persistentStudent.id.toString())
 
         student?.also {
 
@@ -48,6 +48,6 @@ class InMemoryPersistentStudentRepositoryImpl : StudentRepository {
     }
 
     override fun delete(id: String) {
-        students.removeIf { it.id == id }
+        students.removeIf { it.id == id.toInt() }
     }
 }

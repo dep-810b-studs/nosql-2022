@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 data class Student(
-    var id: String?,
+    var id: Int?,
     var name: String?,
     var age: Int?
 )
@@ -12,7 +12,7 @@ data class Student(
 @Document("student")
 data class PersistentStudent(
     @Id
-    var id: String?,
+    var id: Int?,
     var name: String?,
     var age: Int?
 )
@@ -35,7 +35,7 @@ fun PersistentStudent.toStudent(): Student = Student(
 )
 
 fun StudentToUpdate.toPersistence(id: String): PersistentStudent = PersistentStudent(
-    id,
+    id.toInt(),
     this.name,
     this.age
 )
