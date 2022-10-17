@@ -20,7 +20,7 @@ class StudentWriteRepositoryImpl(private val mongoOperations: MongoOperations,
             .first()
     }
 
-    override fun delete(id: String) {
+    override fun delete(id: Int) {
         mongoOperations.remove(Query.query(Criteria.where("_id").`is`(id)), PersistentStudent::class.java)
     }
 }

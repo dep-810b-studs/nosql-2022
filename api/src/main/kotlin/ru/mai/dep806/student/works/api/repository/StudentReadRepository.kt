@@ -4,5 +4,5 @@ import ru.mai.dep806.student.works.api.model.PersistentStudent
 
 interface StudentReadRepository {
     fun findAll(): List<PersistentStudent>
-    fun findById(id: String): PersistentStudent?
+    fun findById(id: Int): PersistentStudent?
 }

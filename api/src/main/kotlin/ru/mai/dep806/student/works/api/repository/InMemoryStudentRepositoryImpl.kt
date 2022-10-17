@@ -14,7 +14,7 @@ class InMemoryPersistentStudentRepositoryImpl : StudentReadRepository, StudentWr
 
     override fun findAll(): List<PersistentStudent> = students
 
-    override fun findById(id: String): PersistentStudent? = students.singleOrNull { it.id == id.toInt() }
+    override fun findById(id: Int): PersistentStudent? = students.singleOrNull { it.id == id }
 
     override fun add(student: PersistentStudent) {
 
@@ -26,7 +26,7 @@ class InMemoryPersistentStudentRepositoryImpl : StudentReadRepository, StudentWr
 
     override fun update(persistentStudent: PersistentStudent) : PersistentStudent? {
 
-        val student = findById(persistentStudent.id.toString())
+        val student = findById(persistentStudent.id!!.toInt())
 
         student?.also {
 
@@ -47,7 +47,7 @@ class InMemoryPersistentStudentRepositoryImpl : StudentReadRepository, StudentWr
         return student
     }
 
-    override fun delete(id: String) {
-        students.removeIf { it.id == id.toInt() }
+    override fun delete(id: Int) {
+        students.removeIf { it.id == id }
     }
 }

@@ -34,8 +34,8 @@ fun PersistentStudent.toStudent(): Student = Student(
     this.age
 )
 
-fun StudentToUpdate.toPersistence(id: String): PersistentStudent = PersistentStudent(
-    id.toInt(),
+fun StudentToUpdate.toPersistence(id: Int): PersistentStudent = PersistentStudent(
+    id,
     this.name,
     this.age
 )

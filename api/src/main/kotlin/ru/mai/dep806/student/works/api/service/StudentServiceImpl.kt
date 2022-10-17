@@ -29,7 +29,7 @@ class StudentServiceImpl(
         .map { it.toStudent() }
 
     override fun findById(id: String): Student? = studentReadRepository
-        .findById(id)
+        .findById(id.toInt())
         ?.toStudent()
 
     override fun add(student: Student) {
@@ -59,7 +59,7 @@ class StudentServiceImpl(
     override fun update(id: String, student: StudentToUpdate): Student? {
         with(unitOfWorkFactory.createInstance()) {
             try {
-                this.studentWriteRepository.update(student.toPersistence(id))
+                this.studentWriteRepository.update(student.toPersistence(id.toInt()))
             }
             catch(exception: Exception){
                 logger.error("Some error during saving to mongo: $exception")
@@ -67,7 +67,7 @@ class StudentServiceImpl(
             }
 
             try {
-                studentSearchRepository.update(student.toPersistence(id))
+                studentSearchRepository.update(student.toPersistence(id.toInt()))
             }
             catch(exception: Exception){
                 logger.error("Some error during saving to elasticsearch: $exception")
@@ -85,7 +85,7 @@ class StudentServiceImpl(
     override fun delete(id: String) {
         with(unitOfWorkFactory.createInstance()) {
             try {
-                this.studentWriteRepository.delete(id)
+                this.studentWriteRepository.delete(id.toInt())
             }
             catch(exception: Exception){
                 logger.error("Some error during deletion from mongo: $exception")
@@ -93,7 +93,7 @@ class StudentServiceImpl(
             }
 
             try {
-                studentSearchRepository.delete(id)
+                studentSearchRepository.delete(id.toInt())
             }
             catch(exception: Exception){
                 logger.error("Some error during deletion from elasticsearch: $exception")

@@ -47,8 +47,17 @@ class StudentSearchRepositoryImpl : StudentSearchRepository {
         TODO("Not yet implemented")
     }
 
-    override fun delete(id: String) {
-        TODO("Not yet implemented")
+    override fun delete(id: Int) {
+        elasticSearchClient.deleteByQuery {requestBuilder ->
+            requestBuilder.index(INDEX_NAME)
+            requestBuilder.query {queryBuilder ->
+                queryBuilder.match {
+                    it
+                        .field("id")
+                        .query(id.toLong())
+                }
+            }
+        }
     }
 
     override fun find(filter: String): List<PersistentStudent> {

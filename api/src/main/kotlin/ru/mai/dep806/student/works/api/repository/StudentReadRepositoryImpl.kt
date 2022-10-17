@@ -14,7 +14,7 @@ class StudentReadRepositoryImpl(
     override fun findAll(): List<PersistentStudent> =
         mongoOperations.findAll(PersistentStudent::class.java)
 
-    override fun findById(id: String): PersistentStudent? {
+    override fun findById(id: Int): PersistentStudent? {
         val students = mongoOperations.find(Query.query(Criteria.where("_id").`is`(id)), PersistentStudent::class.java)
         return students.first()
     }
