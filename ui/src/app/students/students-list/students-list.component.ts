@@ -21,7 +21,6 @@ export class StudentsListComponent implements OnInit {
 
   constructor(private studentsApiClient: StudentsApiClient) { }
 
-  @Input()
   set searchText(searchText: string) {
     this.loadStudents(searchText);
   }
