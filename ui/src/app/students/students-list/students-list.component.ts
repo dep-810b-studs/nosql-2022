@@ -99,6 +99,7 @@ export class StudentsListComponent implements OnInit {
         })
         .subscribe(() => {
         this.statusMessage = 'Данные успешно обновлены';
+          this.editedStudent = undefined;
           this.loadStudents();
       });
     }

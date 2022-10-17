@@ -43,8 +43,9 @@ class StudentSearchRepositoryImpl : StudentSearchRepository {
 
     }
 
-    override fun update(student: PersistentStudent): PersistentStudent? {
-        TODO("Not yet implemented")
+    override fun update(student: PersistentStudent) {
+        delete(student.id!!)
+        add(student)
     }
 
     override fun delete(id: Int) {
