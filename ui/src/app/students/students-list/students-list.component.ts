@@ -23,16 +23,7 @@ export class StudentsListComponent implements OnInit {
 
   @Input()
   set searchText(searchText: string) {
-
-    let studentsObservable: Observable<Student[]> = searchText
-        ? this.studentsApiClient.find(searchText)
-        : this.studentsApiClient.getAll();
-
-    studentsObservable
-      .pipe(
-        map(students => students.sort((one, two) => (one.id > two.id ? 1 : -1)))
-      )
-      .subscribe(students => this.students$?.next(students));
+    this.loadStudents(searchText);
   }
 
   ngOnInit(): void {
@@ -48,9 +39,12 @@ export class StudentsListComponent implements OnInit {
     }
   }
 
-  private loadStudents() {
-    this.studentsApiClient
-      .getAll()
+  private loadStudents(searchText: string = "") {
+    let studentsObservable: Observable<Student[]> = searchText
+      ? this.studentsApiClient.find(searchText)
+      : this.studentsApiClient.getAll();
+
+    studentsObservable
       .pipe(
         map(students => students.sort((one, two) => (one.id > two.id ? 1 : -1)))
       )
