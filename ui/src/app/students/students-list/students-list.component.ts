@@ -1,6 +1,7 @@
-import { Component, OnInit, TemplateRef, ViewChild } from "@angular/core";
+import {Component, Input, OnInit, TemplateRef, ViewChild} from "@angular/core";
 import { StudentsApiClient } from "../students-api-client.service";
 import Student from "../student";
+import {map, Observable, Subject} from "rxjs";
 
 @Component({
   selector: 'app-students-list',
@@ -15,11 +16,27 @@ export class StudentsListComponent implements OnInit {
   editedStudent: Student | undefined;
   isNewRecord: boolean = false;
   statusMessage: string = "";
-  students: Student[] | undefined = [];
+  students$: Subject<Student[]> | undefined = new Subject<Student[]>();
+  students: Student[] | undefined;
 
   constructor(private studentsApiClient: StudentsApiClient) { }
 
+  @Input()
+  set searchText(searchText: string) {
+
+    let studentsObservable: Observable<Student[]> = searchText
+        ? this.studentsApiClient.find(searchText)
+        : this.studentsApiClient.getAll();
+
+    studentsObservable
+      .pipe(
+        map(students => students.sort((one, two) => (one.id > two.id ? 1 : -1)))
+      )
+      .subscribe(students => this.students$?.next(students));
+  }
+
   ngOnInit(): void {
+    this.students$?.subscribe(students => this.students = students);
     this.loadStudents();
   }
 
@@ -34,9 +51,10 @@ export class StudentsListComponent implements OnInit {
   private loadStudents() {
     this.studentsApiClient
       .getAll()
-      .subscribe((students) => {
-        this.students = students.sort((one, two) => (one.id > two.id ? 1 : -1));
-      });
+      .pipe(
+        map(students => students.sort((one, two) => (one.id > two.id ? 1 : -1)))
+      )
+      .subscribe(students => this.students$?.next(students));
   }
 
   addStudent() {

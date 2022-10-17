@@ -1,6 +1,7 @@
 <h1>Список студентов</h1>
+<input class="form-control" type="text" [(ngModel)]="searchText" name="search" autocomplete="off" placeholder="&#61442;  Введите имя студента">
 <input type="button" value="Добавить" class="btn btn-default" (click)="addStudent()" />
-<table class="table table-striped" *ngIf="students">
+<table class="table table-striped">
   <thead>
     <tr>
       <td>Id</td>

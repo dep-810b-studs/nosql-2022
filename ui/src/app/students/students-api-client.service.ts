@@ -8,21 +8,27 @@ import Student from "./student";
 })
 export class StudentsApiClient {
 
+  private basePath: string = "/api/students";
+
   constructor(private httpClient: HttpClient) { }
 
   create(student: Student): Observable<Object> {
-    return this.httpClient.post<Student>(`/api/students`, student);
+    return this.httpClient.post<Student>(this.basePath, student);
   }
 
   getAll() : Observable<Student[]>{
-    return this.httpClient.get<Student[]>("/api/students");
+    return this.httpClient.get<Student[]>(`${this.basePath}/all`);
+  }
+
+  find(searchFilter: string) : Observable<Student[]>{
+    return this.httpClient.get<Student[]>(`${this.basePath}?searchFilter=${searchFilter}`);
   }
 
   update(studentId: string, student: Partial<Student>): Observable<Student> {
-    return this.httpClient.put<Student>(`/api/students/${studentId}`, student);
+    return this.httpClient.put<Student>(`${this.basePath}/${studentId}`, student);
   }
 
   delete(studentId: string): Observable<Object> {
-    return this.httpClient.delete(`/api/students/${studentId}`);
+    return this.httpClient.delete(`${this.basePath}/${studentId}`);
   }
 }
