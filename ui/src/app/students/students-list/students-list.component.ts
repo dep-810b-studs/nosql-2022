@@ -82,26 +82,16 @@ export class StudentsListComponent implements OnInit {
   }
 
   saveStudent() {
-    if (this.isNewRecord) {
-      this.studentsApiClient
-        .create(this.editedStudent!)
-        .subscribe(() => {
-          this.statusMessage = 'Данные успешно добавлены';
-          this.editedStudent = undefined;
-          this.loadStudents();
-        });
-      this.isNewRecord = false;
-    } else {
-      this.studentsApiClient
-        .update(this.editedStudent?.id!, {
-          name: this.editedStudent?.name!,
-          age: this.editedStudent?.age!
-        })
-        .subscribe(() => {
-        this.statusMessage = 'Данные успешно обновлены';
-          this.editedStudent = undefined;
-          this.loadStudents();
-      });
-    }
+    const studentUpdated$: Observable<any> = this.isNewRecord
+      ? this.studentsApiClient.create(this.editedStudent!)
+      : this.studentsApiClient.update(this.editedStudent?.id!, this.editedStudent!);
+
+    studentUpdated$.subscribe(() => {
+      this.statusMessage = 'Данные успешно обновлены';
+      this.editedStudent = undefined;
+      this.loadStudents();
+    });
+
+    this.isNewRecord = false;
   }
 }
