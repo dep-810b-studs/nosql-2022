@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit, TemplateRef, ViewChild} from "@angular/core";
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild } from "@angular/core";
 import { StudentsApiClient } from "../students-api-client.service";
 import Student from "../student";
 import { Observable, Subject, takeUntil } from "rxjs";
@@ -18,7 +18,7 @@ export class StudentsListComponent implements OnInit, OnDestroy {
   statusMessage: string = "";
   students: Student[] | undefined;
 
-  private students$: Subject<Student[]> | undefined = new Subject<Student[]>();
+  private students$ = new Subject<Student[]>();
   private destroy$ = new Subject<void>();
 
   constructor(private studentsApiClient: StudentsApiClient) { }
@@ -29,7 +29,7 @@ export class StudentsListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.students$
-      ?.pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$))
       .subscribe(students => this.students = students);
     this.loadStudents();
   }
@@ -54,7 +54,7 @@ export class StudentsListComponent implements OnInit, OnDestroy {
 
     studentsObservable
       .pipe(takeUntil(this.destroy$))
-      .subscribe(students => this.students$?.next(students));
+      .subscribe(students => this.students$.next(students));
   }
 
   addStudent() {
