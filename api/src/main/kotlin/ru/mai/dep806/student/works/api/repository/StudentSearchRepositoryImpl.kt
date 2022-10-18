@@ -40,12 +40,28 @@ class StudentSearchRepositoryImpl : StudentSearchRepository {
             it.index(INDEX_NAME)
             it.document(student)
         }
-
     }
 
     override fun update(student: PersistentStudent) {
-        delete(student.id!!)
-        add(student)
+        val searchResult = elasticSearchClient.search({requestBuilder ->
+            requestBuilder
+                .index(INDEX_NAME)
+                .query { queryBuilder ->
+                    queryBuilder.match {
+                        it
+                            .field("id")
+                            .query(student.id!!.toLong())
+                    }
+                }
+        }, PersistentStudent::class.java)
+
+        val studentElasticId = searchResult.hits().hits().firstNotNullOf { it.id() }
+
+        elasticSearchClient.index{
+            it.index(INDEX_NAME)
+            it.id(studentElasticId)
+            it.document(student)
+        }
     }
 
     override fun delete(id: Int) {
