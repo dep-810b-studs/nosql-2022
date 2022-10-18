@@ -1,14 +1,14 @@
-import {Component, Input, OnInit, TemplateRef, ViewChild} from "@angular/core";
+import {Component, OnDestroy, OnInit, TemplateRef, ViewChild} from "@angular/core";
 import { StudentsApiClient } from "../students-api-client.service";
 import Student from "../student";
-import {map, Observable, Subject} from "rxjs";
+import { Observable, Subject, takeUntil } from "rxjs";
 
 @Component({
   selector: 'app-students-list',
   templateUrl: './students-list.component.html',
   styleUrls: ['./students-list.component.css']
 })
-export class StudentsListComponent implements OnInit {
+export class StudentsListComponent implements OnInit, OnDestroy {
 
   @ViewChild('readOnlyTemplate', {static: false}) readOnlyTemplate: TemplateRef<any>|null = null;
   @ViewChild('editTemplate', {static: false}) editTemplate: TemplateRef<any>|null = null;
@@ -16,8 +16,10 @@ export class StudentsListComponent implements OnInit {
   editedStudent: Student | undefined;
   isNewRecord: boolean = false;
   statusMessage: string = "";
-  students$: Subject<Student[]> | undefined = new Subject<Student[]>();
   students: Student[] | undefined;
+
+  private students$: Subject<Student[]> | undefined = new Subject<Student[]>();
+  private destroy$ = new Subject<void>();
 
   constructor(private studentsApiClient: StudentsApiClient) { }
 
@@ -26,16 +28,23 @@ export class StudentsListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.students$?.subscribe(students => this.students = students);
+    this.students$
+      ?.pipe(takeUntil(this.destroy$))
+      .subscribe(students => this.students = students);
     this.loadStudents();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadTemplate(student: Student) {
     if (this.editedStudent && this.editedStudent.id == student.id) {
       return this.editTemplate;
-    } else {
-      return this.readOnlyTemplate;
     }
+
+    return this.readOnlyTemplate;
   }
 
   private loadStudents(searchText: string = "") {
@@ -44,9 +53,7 @@ export class StudentsListComponent implements OnInit {
       : this.studentsApiClient.getAll();
 
     studentsObservable
-      .pipe(
-        map(students => students.sort((one, two) => (one.id > two.id ? 1 : -1)))
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe(students => this.students$?.next(students));
   }
 
@@ -71,6 +78,7 @@ export class StudentsListComponent implements OnInit {
   deleteStudent(student: any) {
     this.studentsApiClient
       .delete(student.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() =>{
           this.statusMessage = 'Данные успешно удалены';
           this.loadStudents();
@@ -86,11 +94,13 @@ export class StudentsListComponent implements OnInit {
       ? this.studentsApiClient.create(this.editedStudent!)
       : this.studentsApiClient.update(this.editedStudent?.id!, this.editedStudent!);
 
-    studentUpdated$.subscribe(() => {
-      this.statusMessage = 'Данные успешно обновлены';
-      this.editedStudent = undefined;
-      this.loadStudents();
-    });
+    studentUpdated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.statusMessage = 'Данные успешно обновлены';
+        this.editedStudent = undefined;
+        this.loadStudents();
+      });
 
     this.isNewRecord = false;
   }
