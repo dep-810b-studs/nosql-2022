@@ -2,6 +2,7 @@ package ru.mai.dep806.student.works.api.model
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import ru.mai.dep806.student.works.api.repository.StudentReadRepositoryImpl
 
 data class Student(
     var id: Int?,
@@ -9,7 +10,7 @@ data class Student(
     var age: Int?
 )
 
-@Document("student")
+@Document(StudentReadRepositoryImpl.DOCUMENT_NAME)
 data class PersistentStudent(
     @Id
     var id: Int?,

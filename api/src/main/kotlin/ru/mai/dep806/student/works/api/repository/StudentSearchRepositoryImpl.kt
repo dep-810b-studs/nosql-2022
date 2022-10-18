@@ -88,11 +88,15 @@ class StudentSearchRepositoryImpl : StudentSearchRepository {
                                 .query("*$filter*")
                         }
                     }
+                    .sort { builder ->
+                        builder.field { it.field("id") }
+                    }
         }, PersistentStudent::class.java)
 
         return searchResponse
             .hits()
-            .hits().mapNotNull { it.source() }
+            .hits()
+            .mapNotNull { it.source() }
     }
 
 }
