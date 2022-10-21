@@ -10,6 +10,7 @@ import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient
 import org.springframework.stereotype.Repository
 import ru.mai.dep806.student.works.api.model.PersistentStudent
+import ru.mai.dep806.student.works.api.model.StudentToUpdate
 
 @Repository("studentSearchRepository")
 class StudentSearchRepositoryImpl : StudentSearchRepository {
@@ -42,7 +43,7 @@ class StudentSearchRepositoryImpl : StudentSearchRepository {
         }
     }
 
-    override fun update(student: PersistentStudent) {
+    override fun update(id: String, student: StudentToUpdate) {
         val searchResult = elasticSearchClient.search({requestBuilder ->
             requestBuilder
                 .index(INDEX_NAME)
@@ -50,7 +51,7 @@ class StudentSearchRepositoryImpl : StudentSearchRepository {
                     queryBuilder.match {
                         it
                             .field("id")
-                            .query(student.id!!.toLong())
+                            .query(id)
                     }
                 }
         }, PersistentStudent::class.java)
@@ -64,14 +65,14 @@ class StudentSearchRepositoryImpl : StudentSearchRepository {
         }
     }
 
-    override fun delete(id: Int) {
+    override fun delete(id: String) {
         elasticSearchClient.deleteByQuery {requestBuilder ->
             requestBuilder.index(INDEX_NAME)
             requestBuilder.query {queryBuilder ->
                 queryBuilder.match {
                     it
                         .field("id")
-                        .query(id.toLong())
+                        .query(id)
                 }
             }
         }
@@ -87,9 +88,6 @@ class StudentSearchRepositoryImpl : StudentSearchRepository {
                                 .defaultField("name")
                                 .query("*$filter*")
                         }
-                    }
-                    .sort { builder ->
-                        builder.field { it.field("id") }
                     }
         }, PersistentStudent::class.java)
 

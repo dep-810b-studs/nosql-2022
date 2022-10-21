@@ -4,7 +4,6 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <td>Id</td>
       <td>Имя</td>
       <td>Возраст</td>
       <td></td>
@@ -23,7 +22,6 @@
 
 
 <ng-template #readOnlyTemplate let-student>
-  <td>{{student.id}}</td>
   <td>{{student.name}}</td>
   <td>{{student.age}}</td>
   <td>
@@ -34,12 +32,8 @@
   </td>
 </ng-template>
 
-<!--шаблон для редактирования-->
 <ng-template #editTemplate>
   <ng-container *ngIf="editedStudent">
-    <td>
-      <input type="number" [(ngModel)]="editedStudent.id" class="form-control" />
-    </td>
     <td>
       <input type="text" [(ngModel)]="editedStudent.name" class="form-control" />
     </td>

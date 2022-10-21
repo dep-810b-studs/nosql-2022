@@ -7,7 +7,7 @@ interface StudentService {
     fun findAll(): List<Student>
     fun find(searchFilter: String): List<Student>
     fun findById(id: String): Student?
-    fun add(student: Student)
+    fun add(student: StudentToUpdate)
     fun update(id: String, student: StudentToUpdate) : Student?
     fun delete(id: String)
 }

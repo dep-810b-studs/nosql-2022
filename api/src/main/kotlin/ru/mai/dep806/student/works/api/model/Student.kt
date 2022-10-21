@@ -4,39 +4,33 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import ru.mai.dep806.student.works.api.repository.StudentReadRepositoryImpl
 
+data class StudentToUpdate(
+    val name: String?,
+    val age: Int?
+)
+
 data class Student(
-    var id: Int?,
-    var name: String?,
-    var age: Int?
+    val id: String,
+    val name: String,
+    val age: Int
 )
 
 @Document(StudentReadRepositoryImpl.DOCUMENT_NAME)
 data class PersistentStudent(
     @Id
-    var id: Int?,
-    var name: String?,
-    var age: Int?
-)
-
-data class StudentToUpdate(
-    var name: String?,
-    var age: Int?
-)
-
-fun Student.toPersistence(): PersistentStudent = PersistentStudent(
-    this.id,
-    this.name,
-    this.age
+    val id: String? = null,
+    val name: String?,
+    val age: Int?
 )
 
 fun PersistentStudent.toStudent(): Student = Student(
-    this.id,
-    this.name,
-    this.age
+    this.id!!,
+    this.name!!,
+    this.age!!
 )
 
-fun StudentToUpdate.toPersistence(id: Int): PersistentStudent = PersistentStudent(
-    id,
-    this.name,
-    this.age
+fun StudentToUpdate.toPersistence(id: String? = null): PersistentStudent = PersistentStudent(
+    id = id,
+    name = this.name,
+    age = this.age
 )

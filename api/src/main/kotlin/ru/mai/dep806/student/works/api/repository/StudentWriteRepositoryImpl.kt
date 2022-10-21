@@ -5,29 +5,30 @@ import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import ru.mai.dep806.student.works.api.model.PersistentStudent
+import ru.mai.dep806.student.works.api.model.StudentToUpdate
 
-class StudentWriteRepositoryImpl(private val mongoOperations: MongoOperations,
-                                 ): StudentWriteRepository {
+class StudentWriteRepositoryImpl(private val mongoOperations: MongoOperations): StudentWriteRepository {
 
-    override fun add(student: PersistentStudent) {
-        mongoOperations.save(student)
+    override fun add(student: PersistentStudent): String {
+        val addedStudent = mongoOperations.save(student)
+        return addedStudent.id ?: ""
     }
 
-    override fun update(student: PersistentStudent): PersistentStudent? {
+    override fun update(id: String, student: StudentToUpdate): PersistentStudent? {
         val updateDefinition = Update()
             .set("name", student.name)
             .set("age", student.age)
 
-        mongoOperations.upsert(whereQuery(student.id!!), updateDefinition, PersistentStudent::class.java)
+        mongoOperations.upsert(whereQuery(id), updateDefinition, PersistentStudent::class.java)
 
         return mongoOperations
-            .find(whereQuery(student.id!!), PersistentStudent::class.java)
+            .find(whereQuery(id), PersistentStudent::class.java)
             .first()
     }
 
-    override fun delete(id: Int) {
+    override fun delete(id: String) {
         mongoOperations.remove(whereQuery(id), PersistentStudent::class.java)
     }
 
-    private fun whereQuery(id: Int): Query = Query.query(Criteria.where("_id").`is`(id))
+    private fun whereQuery(id: String): Query = Query.query(Criteria.where("_id").`is`(id))
 }

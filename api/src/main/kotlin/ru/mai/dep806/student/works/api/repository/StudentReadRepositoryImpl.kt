@@ -24,7 +24,7 @@ class StudentReadRepositoryImpl(
                     .find()
                     .sort(ascending("_id"))
             }
-            ?.map { PersistentStudent(it.getInteger("_id"), it.getString("name"), it.getInteger("age")) }
+            ?.map { PersistentStudent(it.getObjectId("_id").toString(), it.getString("name"), it.getInteger("age")) }
 
         return students?.mapNotNull { it } ?: emptyList()
     }

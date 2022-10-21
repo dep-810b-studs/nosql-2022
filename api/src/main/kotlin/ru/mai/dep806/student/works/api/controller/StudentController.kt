@@ -14,7 +14,7 @@ class StudentController(
     @GetMapping("/api/students")
     fun getFilteredStudent(@RequestParam searchFilter: String): List<Student> = studentService.find(searchFilter)
     @PostMapping("/api/students")
-    fun addStudent(@RequestBody student: Student) = studentService.add(student)
+    fun addStudent(@RequestBody student: StudentToUpdate) = studentService.add(student)
     @PutMapping("/api/students/{id}")
     fun updateStudent(@PathVariable id: String, @RequestBody student: StudentToUpdate): Student? = studentService.update(id, student)
     @DeleteMapping("/api/students/{id}")

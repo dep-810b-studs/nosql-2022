@@ -12,7 +12,7 @@ export class StudentsApiClient {
 
   constructor(private httpClient: HttpClient) { }
 
-  create(student: Student): Observable<Object> {
+  create(student: Partial<Student>): Observable<Object> {
     return this.httpClient.post<Student>(this.basePath, student);
   }
 
