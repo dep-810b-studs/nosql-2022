@@ -22,15 +22,12 @@ class StudentReadRepositoryImpl(
                 it
                     .getCollection(DOCUMENT_NAME)
                     .find()
-                    .sort(ascending("_id"))
             }
             ?.map { PersistentStudent(it.getObjectId("_id").toString(), it.getString("name"), it.getInteger("age")) }
 
         return students?.mapNotNull { it } ?: emptyList()
     }
 
-    override fun findById(id: Int): PersistentStudent? {
-        val students = mongoOperations.find(Query.query(Criteria.where("_id").`is`(id)), PersistentStudent::class.java)
-        return students.first()
-    }
+    override fun findById(id: Int): PersistentStudent?
+         = mongoOperations.findById(id, PersistentStudent::class.java)
 }
