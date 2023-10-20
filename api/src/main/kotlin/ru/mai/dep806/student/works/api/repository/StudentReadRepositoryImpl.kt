@@ -12,11 +12,11 @@ class StudentReadRepositoryImpl(
     val mongoOperations: MongoOperations,
 ) : StudentReadRepository {
 
-    companion object{
-        const val DOCUMENT_NAME= "student"
+    companion object {
+        const val DOCUMENT_NAME = "student"
     }
 
-    override fun findAll(): List<PersistentStudent>{
+    override fun findAll(): List<PersistentStudent> {
         val students = mongoOperations
             .execute {
                 it
@@ -28,6 +28,5 @@ class StudentReadRepositoryImpl(
         return students?.mapNotNull { it } ?: emptyList()
     }
 
-    override fun findById(id: Int): PersistentStudent?
-         = mongoOperations.findById(id, PersistentStudent::class.java)
+    override fun findById(id: String): PersistentStudent? = mongoOperations.findById(id, PersistentStudent::class.java)
 }

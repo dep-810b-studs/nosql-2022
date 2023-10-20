@@ -4,10 +4,12 @@ import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
+import org.springframework.stereotype.Repository
 import ru.mai.dep806.student.works.api.model.PersistentStudent
 import ru.mai.dep806.student.works.api.model.StudentToUpdate
 
-class StudentWriteRepositoryImpl(private val mongoOperations: MongoOperations): StudentWriteRepository {
+@Repository("studentWriteRepository")
+class StudentWriteRepositoryImpl(private val mongoOperations: MongoOperations) : StudentWriteRepository {
 
     override fun add(student: PersistentStudent): String {
         val addedStudent = mongoOperations.save(student)
