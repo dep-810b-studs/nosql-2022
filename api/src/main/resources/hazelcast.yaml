@@ -5,3 +5,4 @@ hazelcast:
         enabled: true
   integrity-checker:
     enabled: true
+  cluster-name: tutorial-jet-starter
