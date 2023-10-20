@@ -2,8 +2,6 @@ package ru.mai.dep806.student.works.api.service
 
 import com.hazelcast.core.HazelcastInstance
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import ru.mai.dep806.student.works.api.model.Student
 import ru.mai.dep806.student.works.api.model.StudentToUpdate
@@ -11,13 +9,13 @@ import ru.mai.dep806.student.works.api.model.toPersistence
 import ru.mai.dep806.student.works.api.model.toStudent
 import ru.mai.dep806.student.works.api.repository.StudentReadRepository
 import ru.mai.dep806.student.works.api.repository.StudentSearchRepository
-import ru.mai.dep806.student.works.api.repository.UnitOfWorkFactory
+import ru.mai.dep806.student.works.api.repository.StudentWriteRepository
 
 @Service
 class StudentServiceImpl(
     private val studentReadRepository: StudentReadRepository,
+    private val studentWriteRepository: StudentWriteRepository,
     private val studentSearchRepository: StudentSearchRepository,
-    private val unitOfWorkFactory: UnitOfWorkFactory,
     private val hazelcastInstance: HazelcastInstance
 ) : StudentService {
     private val logger = LoggerFactory.getLogger(StudentServiceImpl::class.java)
@@ -42,7 +40,7 @@ class StudentServiceImpl(
         logger.info("Student with id = $id didn't exist in cache...")
 
         val student = studentReadRepository
-            .findById(id.toInt())
+            .findById(id)
             ?.toStudent()
 
         if(student != null){
@@ -53,79 +51,18 @@ class StudentServiceImpl(
     }
 
     override fun add(student: StudentToUpdate) {
-        with(unitOfWorkFactory.createInstance()) {
-
-            var studentId = ""
-
-            try {
-                studentId = this.studentWriteRepository.add(student.toPersistence())
-            } catch (exception: Exception) {
-                logger.error("Some error during saving to mongo: $exception")
-                return
-            }
-
-            if (studentId == "") {
-                logger.error("Can't get mongo entity id")
-                this.rollback()
-                return
-            }
-
-            try {
-                studentSearchRepository.add(student.toPersistence(studentId))
-            } catch (exception: Throwable) {
-                logger.error("Some error during saving to elasticsearch: $exception")
-                logger.warn("Rollback mongo changes...")
-                this.rollback()
-                return
-            }
-
-            this.commit()
-        }
+        val studentId = this.studentWriteRepository.add(student.toPersistence())
+        studentSearchRepository.add(student.toPersistence(studentId))
     }
 
     override fun update(id: String, student: StudentToUpdate): Student? {
-        with(unitOfWorkFactory.createInstance()) {
-            try {
-                this.studentWriteRepository.update(id, student)
-            } catch (exception: Exception) {
-                logger.error("Some error during saving to mongo: $exception")
-                return null
-            }
-
-            try {
-                studentSearchRepository.update(id, student)
-            } catch (exception: Exception) {
-                logger.error("Some error during saving to elasticsearch: $exception")
-                logger.warn("Rollback mongo changes...")
-                this.rollback()
-                return null
-            }
-
-            this.commit()
-
-            return findById(id)
-        }
+        studentWriteRepository.update(id, student)
+        studentSearchRepository.update(id, student)
+        return findById(id)
     }
 
     override fun delete(id: String) {
-        with(unitOfWorkFactory.createInstance()) {
-            try {
-                this.studentWriteRepository.delete(id)
-            } catch (exception: Exception) {
-                logger.error("Some error during deletion from mongo: $exception")
-                return
-            }
-
-            try {
-                studentSearchRepository.delete(id)
-            } catch (exception: Exception) {
-                logger.error("Some error during deletion from elasticsearch: $exception")
-                logger.warn("Rollback mongo changes...")
-                this.rollback()
-                return
-            }
-
-            this.commit()
-        }
+        studentWriteRepository.delete(id)
+        studentSearchRepository.delete(id)
     }
 }
