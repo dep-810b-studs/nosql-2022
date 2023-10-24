@@ -3,6 +3,7 @@ package ru.mai.dep806.student.works.api.model
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import ru.mai.dep806.student.works.api.repository.StudentReadRepositoryImpl
+import java.io.Serializable
 
 data class StudentToUpdate(
     val name: String?,
@@ -13,7 +14,7 @@ data class Student(
     val id: String,
     val name: String,
     val age: Int
-)
+) : Serializable
 
 @Document(StudentReadRepositoryImpl.DOCUMENT_NAME)
 data class PersistentStudent(
