@@ -61,7 +61,7 @@ export class StudentsListComponent implements OnInit, OnDestroy {
     this.editedStudent = {
       id:"",
       name: "",
-      age:0
+      age:24,
     };
     this.students?.push(this.editedStudent);
     this.isNewRecord = true;
@@ -71,7 +71,7 @@ export class StudentsListComponent implements OnInit, OnDestroy {
     this.editedStudent = {
       id: student.id,
       name: student.name,
-      age: student.age
+      age: student.age,
     }
   }
 

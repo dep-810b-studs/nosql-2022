@@ -8,7 +8,7 @@ import Student from "./student";
 })
 export class StudentsApiClient {
 
-  private basePath: string = "/api/students";
+  private basePath: string = "/students/";
 
   constructor(private httpClient: HttpClient) { }
 
@@ -17,11 +17,11 @@ export class StudentsApiClient {
   }
 
   getAll() : Observable<Student[]>{
-    return this.httpClient.get<Student[]>(`${this.basePath}/all`);
+    return this.httpClient.get<Student[]>(`${this.basePath}`);
   }
 
   find(searchFilter: string) : Observable<Student[]>{
-    return this.httpClient.get<Student[]>(`${this.basePath}?searchFilter=${searchFilter}`);
+    return this.httpClient.get<Student[]>(`${this.basePath}/filter?name=${searchFilter}`);
   }
 
   update(studentId: string, student: Partial<Student>): Observable<Student> {
