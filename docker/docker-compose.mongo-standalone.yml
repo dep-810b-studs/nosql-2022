@@ -1,7 +1,0 @@
-services:
-  db:
-    image: mongo
-    volumes:
-      - mongodb:/data/db
-    ports:
-      - "27017:27017"
